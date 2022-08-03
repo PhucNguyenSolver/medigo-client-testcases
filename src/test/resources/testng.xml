@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<suite name="Test Quick" parallel="false" preserve-order="true">
+    <test name="AutoPass">
+        <classes>
+            <class name="Test.TestAutoPass">
+                <methods>
+                    <include name="login"/>
+                    <include name="testAutoPass"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+    <test name="AutoFail">
+        <classes>
+            <class name="Test.TestAutoPass">
+                <methods>
+                    <include name="testAutoFail"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+</suite>
