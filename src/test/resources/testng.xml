@@ -1,21 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
-<suite name="Test Quick" parallel="false" preserve-order="true">
-    <test name="AutoPass">
+<suite name="Medigo Sanity Check" parallel="false" preserve-order="true">
+    <test name="Sanity check login">
         <classes>
-            <class name="Test.TestAutoPass">
+            <class name="Test.TestSwitching">
                 <methods>
                     <include name="login"/>
-                    <include name="testAutoPass"/>
                 </methods>
             </class>
         </classes>
     </test>
-    <test name="AutoFail">
+    <test name="Ecom Order">
         <classes>
-            <class name="Test.TestAutoPass">
+            <class name="Test.TestSwitching">
                 <methods>
-                    <include name="testAutoFail"/>
+                    <include name="testEcomOrderSuccess"/>
                 </methods>
             </class>
         </classes>

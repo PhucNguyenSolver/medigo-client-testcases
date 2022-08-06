@@ -17,20 +17,13 @@ public class BaseClass {
     private static final String userAppPackage = "xyz.medigo.user";
     private static final String pharAppPackage = "xyz.medigo.pharmacy";
 
-    // private static final String pharAppActivity =
-    // "xyz.medigo.pharmacy.ui.login.loginpharcode.LoginPharCodeActivity";
-    // private static final String userAppActivity =
-    // "xyz.medigo.user.ui.login.LoginActivity";
-
     public static AndroidDriver<MobileElement> driver = null;
 
     @BeforeSuite
     public void setup() {
-        setupLocalAppiumDriver();
-        // if (driver == null) {
+        // clearAppsData();
         // setupLocalAppiumDriver();
-        // }
-        // setupAWSDriver();
+        setupAWSDriver();
     }
 
     @AfterSuite
@@ -65,46 +58,51 @@ public class BaseClass {
 
     public void launchUserApp() {
         driver.activateApp(userAppPackage);
-        tryWaitForPackage(userAppPackage, 15);
-        Assert.assertEquals(userAppPackage, driver.getCurrentPackage());
+        waitForPackage(userAppPackage, 15);
     }
 
     public void launchPharmacyApp() {
         driver.activateApp(pharAppPackage);
-        tryWaitForPackage(pharAppPackage, 15);
-        Assert.assertEquals(pharAppPackage, driver.getCurrentPackage());
+        waitForPackage(pharAppPackage, 15);
     }
 
-    public void tryWaitForPackage(String desiredPackage, int timeoutInSeconds) {
+    public void waitForPackage(String desiredPackage, int timeoutInSeconds) {
         int counter = 0;
         do {
-            System.out.println(driver.getCurrentPackage());
-            if (driver.getCurrentPackage().equals(desiredPackage)) {
-                break;
+            String currentPackage = driver.getCurrentPackage();
+            System.out.print(counter);
+            System.out.println(" secs: " + currentPackage);
+            if (currentPackage.equals(desiredPackage)) {
+                return;
             }
             Utils.trySleep(1000);
             counter++;
         } while (counter < timeoutInSeconds);
+        Assert.fail("waitForPackage:Timeout");
     }
 
     public void clearAppsData() {
+        final String pharAppActivity = "xyz.medigo.pharmacy.ui.login.loginpharcode.LoginPharCodeActivity";
+        final String userAppActivity = "xyz.medigo.user.ui.login.LoginActivity";
         try {
             AndroidDriver<MobileElement> _driver;
-            _driver = makeTemporaryAppiumDriver(userAppPackage);
+            _driver = makeTemporaryAppiumDriver(userAppPackage, userAppActivity);
             _driver.resetApp();
-            _driver = makeTemporaryAppiumDriver(pharAppPackage);
+            _driver = makeTemporaryAppiumDriver(pharAppPackage, pharAppActivity);
             _driver.resetApp();
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
     }
 
-    private AndroidDriver<MobileElement> makeTemporaryAppiumDriver(String appPackage) throws MalformedURLException {
+    private AndroidDriver<MobileElement> makeTemporaryAppiumDriver(String appPackage, String appActivity)
+            throws MalformedURLException {
         DesiredCapabilities cap = new DesiredCapabilities();
         cap.setCapability("deviceName", "Android Emulator");
         cap.setCapability("platformName", "Android");
         cap.setCapability("udid", deviceId);
         cap.setCapability("appPackage", appPackage);
+        cap.setCapability("appActivity", appActivity);
         URL url = new URL(localPath);
         return new AndroidDriver<>(url, cap);
     }

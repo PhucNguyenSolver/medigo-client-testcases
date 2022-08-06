@@ -19,6 +19,8 @@ public class Utils {
         try {
             Thread.sleep(milis);
         } catch (InterruptedException e) {
+            System.out.println("Cannot sleep");
+            e.printStackTrace();
         }
     }
 
@@ -26,7 +28,7 @@ public class Utils {
         final int MAX_ATTEMPTS = 30;
         final int TICK = 200;
 
-        for (int trial = 0; trial < MAX_ATTEMPTS; trial++) {            
+        for (int trial = 0; trial < MAX_ATTEMPTS; trial++) {
             if (driver.findElement(byCondition) != null) {
                 return;
             }

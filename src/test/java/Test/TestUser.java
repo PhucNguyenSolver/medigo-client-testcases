@@ -2,8 +2,6 @@ package Test;
 
 import Common.*;
 import io.appium.java_client.MobileBy;
-import io.appium.java_client.functions.ExpectedCondition;
-
 import org.openqa.selenium.By;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
@@ -13,69 +11,51 @@ import org.testng.annotations.*;
 public class TestUser extends BaseClass {
 
     @BeforeMethod
-    private void gotoPage() {
+    private void goToMainPage() {
         launchUserApp();
     }
 
     public void login() {
         final String PHONE = "0111111111";
         final String DEFAULT_OTP = "123456";
-        WebDriverWait wait = new WebDriverWait(driver, 6);
-        // final String INVALID_PHONE = "01111";
-        // final String INVALID_OTP = "111111";
+        WebDriverWait wait = new WebDriverWait(driver, 10);
 
         final By phoneField = By.id("xyz.medigo.user:id/edtPhoneNumber");
         final By btnGetSMS = By.id("xyz.medigo.user:id/btnGetSMSCode");
         final By otpField = By.id("xyz.medigo.user:id/txt_pin_entry");
         final By btnVerifyOTP = By.id("xyz.medigo.user:id/btnVerifySMSCode");
-        final By optionInputLocation = By.id("xyz.medigo.user:id/tv_input_location");
-        // if (driver.findElements(phoneField).isEmpty()) {
-        // // skip get phone number screen
-        // } else {
         driver.findElement(phoneField).sendKeys(PHONE);
         driver.findElement(btnGetSMS).click();
         wait.until(ExpectedConditions.presenceOfElementLocated(otpField));
-        // }
-        // if (driver.findElements(otpField).isEmpty()) {
-        // // skip get OTP screen
-        // } else {
         driver.findElement(otpField).sendKeys(DEFAULT_OTP);
         driver.findElement(btnVerifyOTP).click();
-        wait.until(ExpectedConditions.presenceOfElementLocated(optionInputLocation));
-        // }
+    }
 
-        // final By optionInputLocation = By.id("xyz.medigo.user:id/tv_input_location");
+    public void selectLocation() {
+        WebDriverWait wait = new WebDriverWait(driver, 10);
+        final By optionInputLocation = By.id("xyz.medigo.user:id/tv_input_location");
         final By savedLocation1 = By.id("xyz.medigo.user:id/tv_address");
         final By btnSubmitLocation = By.id("xyz.medigo.user:id/action_done");
         final By tabHome = By.id("xyz.medigo.user:id/tab_home");
-        // if (driver.findElements(optionInputLocation).isEmpty()) {
-        // // skip get location screen
-        // } else {
         driver.findElement(optionInputLocation).click();
-        wait.until(ExpectedConditions.presenceOfElementLocated(savedLocation1));
         driver.findElement(savedLocation1).click();
-        wait.until(ExpectedConditions.presenceOfElementLocated(btnSubmitLocation));
         driver.findElement(btnSubmitLocation).click();
         wait.until(ExpectedConditions.presenceOfElementLocated(tabHome));
-        // }
-        Assert.assertTrue(driver.findElement(tabHome).isDisplayed());
+        Assert.assertTrue(currentlyInMainPage());
     }
 
-    // // final By tabHome = By.id("xyz.medigo.user:id/tab_home");
-    // final By tabMedicine = By.id("xyz.medigo.user:id/tab_medicine");
-    // final By tabOrder = By.id("xyz.medigo.user:id/tab_user_order");
-    // final By tabMessage = By.id("xyz.medigo.user:id/tab_message");
-    // final By tabAccount = By.id("xyz.medigo.user:id/tab_account");
+    public boolean currentlyInMainPage() {
+        final By tabHome = By.id("xyz.medigo.user:id/tab_home");
+        return (driver.findElements(tabHome).size() > 0);
+    }
 
     public void submitOrder() {
-        login();
         createOrderBeforeCheckout();
         checkoutOrderAfterCreate();
         gotoMainPageAfterCheckout();
     }
 
     public void submitAndCancelOrder() {
-        login();
         createOrderBeforeCheckout();
         checkoutOrderAfterCreate();
         final long maxTimeoutInSecond = 45;
@@ -92,13 +72,6 @@ public class TestUser extends BaseClass {
             return false;
         }
     }
-
-    // private void cancelOrder() {
-    // driver.findElement(By.id("xyz.medigo.user:id/tab_user_order")).click();
-    // By lastOrder = By.xpath(
-    // "/hierarchy/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.FrameLayout/androidx.drawerlayout.widget.DrawerLayout/android.view.ViewGroup/android.widget.RelativeLayout/android.widget.FrameLayout/android.widget.FrameLayout/android.view.ViewGroup/android.widget.RelativeLayout/androidx.viewpager.widget.ViewPager/android.widget.FrameLayout/android.widget.LinearLayout/android.view.ViewGroup/androidx.recyclerview.widget.RecyclerView/android.widget.LinearLayout[1]/android.widget.FrameLayout/android.widget.LinearLayout");
-    // driver.findElement(lastOrder).click();
-    // }
 
     private void cancelDisplayingOrderAndBack(long maxTimeoutInSecond) {
         By swiper = By.id("xyz.medigo.user:id/tvPharmacyName");
@@ -157,7 +130,7 @@ public class TestUser extends BaseClass {
     private void gotoMainPageAfterCheckout() {
         driver.navigate().back();
         By tabOrder = By.id("xyz.medigo.user:id/tab_user_order");
-        WebDriverWait wait = new WebDriverWait(driver, 5);
+        WebDriverWait wait = new WebDriverWait(driver, 10);
         wait.until(ExpectedConditions.visibilityOfElementLocated(tabOrder));
     }
 
