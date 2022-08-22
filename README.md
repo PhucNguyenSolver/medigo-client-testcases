@@ -18,15 +18,16 @@ public void setup() {
 
 4. Run the test:
     a. Run locally via cli
+    Logout both user account and pharmacy account
     ```
-    mvn test
+    mvn clean test -Dlocal=true
     ```
     b. Run on AWS device farm
-    1.Build your test package (`zip-with-dependencies.zip` in target folder)
+    Build your test package (`zip-with-dependencies.zip` in target folder)
     ```
     mvn clean package -DskipTests=true
     ```
-    2. Upload .app file and test package (in step 1) via the AWS console
+    Upload .app file and test package (in step 1) via the AWS console
 
 
 ---

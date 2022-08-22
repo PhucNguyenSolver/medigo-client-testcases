@@ -21,9 +21,15 @@ public class BaseClass {
 
     @BeforeSuite
     public void setup() {
-        // clearAppsData();
-        // setupLocalAppiumDriver();
-        setupAWSDriver();
+        System.out.println("local: " + System.getProperty("local"));
+        if ("true".equals(System.getProperty("local"))) {
+            // clearAppsData();
+            setupLocalAppiumDriver();
+            enableImplicitlyWait();
+        } else {
+            setupAWSDriver();
+            enableImplicitlyWait();
+        }
     }
 
     @AfterSuite
@@ -36,13 +42,12 @@ public class BaseClass {
             URL url = new URL(localPath);
             DesiredCapabilities capabilities = new DesiredCapabilities();
             driver = new AndroidDriver<>(url, capabilities);
-            driver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
         } catch (MalformedURLException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public void setupLocalAppiumDriver() {
+    private void setupLocalAppiumDriver() {
         try {
             DesiredCapabilities cap = new DesiredCapabilities();
             cap.setCapability("deviceName", "Android Emulator");
@@ -50,23 +55,35 @@ public class BaseClass {
             cap.setCapability("udid", deviceId);
             URL url = new URL(localPath);
             driver = new AndroidDriver<>(url, cap);
-            driver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
     }
 
+    public void enableImplicitlyWait() {
+        driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
+    }
+
+    public void disableImplicitlyWait() {
+        driver.manage().timeouts().implicitlyWait(0, TimeUnit.SECONDS);
+    }
+
     public void launchUserApp() {
-        driver.activateApp(userAppPackage);
-        waitForPackage(userAppPackage, 15);
+        launchApp(userAppPackage);
     }
 
     public void launchPharmacyApp() {
-        driver.activateApp(pharAppPackage);
-        waitForPackage(pharAppPackage, 15);
+        launchApp(pharAppPackage);
     }
 
-    public void waitForPackage(String desiredPackage, int timeoutInSeconds) {
+    private void launchApp(String appPackage) {
+        final int timeoutInSeconds = 15;
+        Assert.assertTrue(driver.isAppInstalled(appPackage));
+        driver.activateApp(appPackage);
+        waitForPackage(appPackage, timeoutInSeconds);
+    }
+
+    private void waitForPackage(String desiredPackage, int timeoutInSeconds) {
         int counter = 0;
         do {
             String currentPackage = driver.getCurrentPackage();
@@ -78,10 +95,10 @@ public class BaseClass {
             Utils.trySleep(1000);
             counter++;
         } while (counter < timeoutInSeconds);
-        Assert.fail("waitForPackage:Timeout");
+        Assert.fail(String.format("Timeout (%d) while waitForPackage %s", desiredPackage, timeoutInSeconds));
     }
 
-    public void clearAppsData() {
+    private void clearAppsData() {
         final String pharAppActivity = "xyz.medigo.pharmacy.ui.login.loginpharcode.LoginPharCodeActivity";
         final String userAppActivity = "xyz.medigo.user.ui.login.LoginActivity";
         try {

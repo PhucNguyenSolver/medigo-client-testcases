@@ -10,11 +10,6 @@ import org.testng.annotations.*;
 
 public class TestUser extends BaseClass {
 
-    @BeforeMethod
-    private void goToMainPage() {
-        launchUserApp();
-    }
-
     public void login() {
         final String PHONE = "0111111111";
         final String DEFAULT_OTP = "123456";
@@ -35,11 +30,9 @@ public class TestUser extends BaseClass {
         WebDriverWait wait = new WebDriverWait(driver, 10);
         final By optionInputLocation = By.id("xyz.medigo.user:id/tv_input_location");
         final By savedLocation1 = By.id("xyz.medigo.user:id/tv_address");
-        final By btnSubmitLocation = By.id("xyz.medigo.user:id/action_done");
         final By tabHome = By.id("xyz.medigo.user:id/tab_home");
         driver.findElement(optionInputLocation).click();
         driver.findElement(savedLocation1).click();
-        driver.findElement(btnSubmitLocation).click();
         wait.until(ExpectedConditions.presenceOfElementLocated(tabHome));
         Assert.assertTrue(currentlyInMainPage());
     }
@@ -129,9 +122,6 @@ public class TestUser extends BaseClass {
 
     private void gotoMainPageAfterCheckout() {
         driver.navigate().back();
-        By tabOrder = By.id("xyz.medigo.user:id/tab_user_order");
-        WebDriverWait wait = new WebDriverWait(driver, 10);
-        wait.until(ExpectedConditions.visibilityOfElementLocated(tabOrder));
     }
 
     // // "com.android.permissioncontroller:id/permission_message"
